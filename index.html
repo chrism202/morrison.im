@@ -47,15 +47,18 @@
       }
 
       main {
+        --pad-top: 2.5rem;
+        --pad-bottom: 2rem;
         display: grid;
         grid-template-columns: minmax(220px, 260px) repeat(2, minmax(260px, 1fr));
         grid-template-areas:
           "profile stream projects";
         gap: 1.5rem;
-        align-items: start;
+        align-items: stretch;
         width: min(1120px, 100%);
         margin: 0 auto;
-        padding: 2.5rem clamp(1rem, 3vw, 2.5rem) 2rem;
+        padding: var(--pad-top) clamp(1rem, 3vw, 2.5rem) var(--pad-bottom);
+        min-height: 100vh;
       }
 
       .profile {
@@ -175,6 +178,9 @@
         display: flex;
         flex-direction: column;
         flex: 1;
+        overflow-y: auto;
+        max-height: calc(100vh - var(--pad-top) - var(--pad-bottom) - 2.75rem);
+        overscroll-behavior: contain;
       }
 
       .post {
@@ -224,10 +230,36 @@
       }
 
       .tag {
-        border: 1px solid var(--border-strong);
         border-radius: 6px;
-        padding: 0.2rem 0.5rem;
+        padding: 0.2rem 0.55rem;
         font-size: 0.72rem;
+        font-family: var(--mono);
+        border: 1px solid transparent;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .tag-product-idea {
+        color: #3ddbd9;
+        border-color: rgba(61, 219, 217, 0.45);
+        background: rgba(61, 219, 217, 0.12);
+      }
+
+      .tag-shower-thoughts {
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.5);
+        background: rgba(251, 191, 36, 0.12);
+      }
+
+      .tag-commentary {
+        color: #a3bffa;
+        border-color: rgba(163, 191, 250, 0.45);
+        background: rgba(163, 191, 250, 0.12);
+      }
+
+      .tag-active-projects {
+        color: #f472b6;
+        border-color: rgba(244, 114, 182, 0.45);
+        background: rgba(244, 114, 182, 0.12);
       }
 
       .project-card {
@@ -302,6 +334,11 @@
         .profile {
           position: static;
         }
+
+        .feed-body {
+          max-height: none;
+          overflow: visible;
+        }
       }
 
       @media (max-width: 600px) {
@@ -324,110 +361,186 @@
           <p class="eyebrow">morrison.im</p>
           <h1>Chris Morrison</h1>
           <p class="summary">
-            Product-minded engineer building practical tools and documenting the thinking in the open. If it ships, it earns a write-up.
+            Product Manager by day. Vibe coder by night.
           </p>
         </div>
 
         <dl class="signals">
           <div>
             <dt>Currently</dt>
-            <dd>Exploring resilient systems &amp; durable product habits</dd>
+            <dd>Building models that think, see and decide at scale for Alexa+.</dd>
           </div>
           <div>
             <dt>Focus</dt>
-            <dd>Shipping small, instrumented bets weekly</dd>
+            <dd>Building prototypes and MVPs to validate ideas quickly.</dd>
           </div>
           <div>
             <dt>Based in</dt>
-            <dd>New York · Remote-friendly</dd>
+            <dd>San Francisco Bay Area</dd>
           </div>
         </dl>
 
         <nav class="contact" aria-label="Contact links">
           <a href="mailto:hello@morrison.im">Email</a>
-          <a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.linkedin.com/in/chrism101/" target="_blank" rel="noopener">LinkedIn</a>
           <a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a>
-          <a href="#stream">Stream</a>
-          <a href="#projects">Projects</a>
+          <!-- <a href="#stream">Stream</a>
+          <a href="#projects">Projects</a> -->
         </nav>
       </aside>
 
       <section class="feed" id="stream">
         <header class="feed-heading">
           <h2>Stream of Consciousness</h2>
-          <p>Working log: long-form notes, terse checkpoints, and in-between artifacts.</p>
+          <p>Working log: long-form notes, shower thoughts, and product ideas (feel free to steal).</p>
         </header>
         <div class="feed-body">
+
           <article class="post">
-            <div class="post-type">Micro-note · May 7</div>
-            <h3 class="post-title">Small bets compound faster than master plans</h3>
-            <p class="post-body">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur blandit libero at tortor aliquet, a ullamcorper nisl iaculis. Praesent faucibus, nisl id consequat sagittis, lectus magna aliquet ligula, non pellentesque neque tortor ut nisl.
-            </p>
+            <div class="post-type">August 30th 2025</div>
+            <h3 class="post-title">Context builder for iOS</h3>
+            <p class="post-body">A “context builder” app that works for iPhone. The premise of the application is that I can highlight any piece of text or select any image or other content and via the built-in share sheet, add it to a universal unstructured personal context. The focus of the application should be exclusively on removing the barrier to adding context and content - it should be as easy and simple as possible to add something from any app or website on my phone. Eventually we will use this context to do something useful, like  automatically creating “buckets” of related context, for example a selection of lifestyle guidelines and important advice, or a single place where all information related to an upcoming trip or house purchase are automatically collated.</p>
             <div class="post-meta">
-              <time datetime="2024-05-07">May 7, 2024</time>
               <span class="tags">
-                <span class="tag">iteration</span>
-                <span class="tag">craft</span>
+                <span class="tag tag-product-idea">Product Idea</span>
+                <span class="tag tag-active-projects">Active Projects</span>
+
+              </span>
+            </div>
+          </article>
+
+
+          <article class="post">
+            <div class="post-type">July 8th 2024</div>
+            <h3 class="post-title">Advertising data for LLMs</h3>
+            <p class="post-body">The business is selling ads, the customer buys ad topics, we generate the RLHF/SFT data required to bias the LLM and then we pay model builders to use our data.</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+                <!-- <span class="tag tag-shower-thoughts">Shower Thoughts</span>
+                <span class="tag tag-commentary">Commentary</span> -->
               </span>
             </div>
           </article>
 
           <article class="post">
-            <div class="post-type">Long-form · Apr 28</div>
-            <h3 class="post-title">The architecture of everyday tools</h3>
-            <p class="post-body">
-              Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed gravida erat in nulla sollicitudin varius. Morbi ac nibh ex. Integer non consequat lacus. Vivamus luctus, lorem id varius porta, quam nisl fermentum elit.
-            </p>
+            <div class="post-type">July 8th 2024</div>
+            <h3 class="post-title">Text-a-service</h3>
+            <p class="post-body">API layer on top of service (OpenAI, CalFire), provision phone number from Twilio and connect to API layer.</p>
             <div class="post-meta">
-              <time datetime="2024-04-28">Apr 28, 2024</time>
               <span class="tags">
-                <span class="tag">systems</span>
-                <span class="tag">product</span>
-                <span class="tag">notes</span>
+                <span class="tag tag-product-idea">Product Idea</span>
+                <span class="tag tag-active-projects">Active Projects</span>
               </span>
             </div>
           </article>
 
           <article class="post">
-            <div class="post-type">Dispatch · Apr 20</div>
-            <h3 class="post-title">Shipping the messy middle</h3>
-            <p class="post-body">
-              Aenean faucibus laoreet risus, sit amet bibendum lorem consequat id. Cras luctus, lacus sed suscipit venenatis, augue arcu consequat sem, vitae posuere justo tortor in ligula. Integer fermentum lobortis turpis, vitae ultrices ex dictum nec.
-            </p>
+            <div class="post-type">March 1st 2022</div>
+            <h3 class="post-title">Off switch.</h3>
+            <p class="post-body"> Web-based button that turns on and off an EC2 server, ideally the one that is hosting the site.</p>
             <div class="post-meta">
-              <time datetime="2024-04-20">Apr 20, 2024</time>
               <span class="tags">
-                <span class="tag">build-in-public</span>
+                <span class="tag tag-product-idea">Product Idea</span>
               </span>
             </div>
           </article>
 
           <article class="post">
-            <div class="post-type">Quick hit · Apr 11</div>
-            <h3 class="post-title">The hypothesis shelf</h3>
-            <p class="post-body">
-              Morbi semper, lacus eget facilisis dapibus, nisl nibh vulputate nulla, eu cursus enim lacus a eros. Suspendisse potenti. Vestibulum iaculis orci non suscipit auctor.
-            </p>
+            <div class="post-type">Sept 2st 2021</div>
+            <h3 class="post-title">Meditation phones</h3>
+            <p class="post-body">Play white noise automatically when you put them in your ear.</p>
             <div class="post-meta">
-              <time datetime="2024-04-11">Apr 11, 2024</time>
               <span class="tags">
-                <span class="tag">research</span>
-                <span class="tag">strategy</span>
+                <span class="tag tag-product-idea">Product Idea</span>
               </span>
             </div>
           </article>
 
           <article class="post">
-            <div class="post-type">Tweetish · Mar 30</div>
-            <h3 class="post-title">Some ideas need to be said out loud to exist</h3>
-            <p class="post-body">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ullamcorper suscipit viverra neque, eget eleifend enim pretium vitae.
-            </p>
+            <div class="post-type">June 22nd 2021</div>
+            <h3 class="post-title">Layman</h3>
+            <p class="post-body">A service that summarizes key research papers and highlights how many times they have been referenced (lots = good), what the key conclusions were, and how many subjects were in the test group.</p>
             <div class="post-meta">
-              <time datetime="2024-03-30">Mar 30, 2024</time>
               <span class="tags">
-                <span class="tag">voice</span>
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">April 30th 2021</div>
+            <h3 class="post-title">Ultimate bottle</h3>
+            <p class="post-body">A standardised bottle that is optimised for CO2 emissions,Take what the shipping container done for international trade, What are bottles responsible for in CO2 emissions?</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">April 29th 201</div>
+            <h3 class="post-title">Rip-off Calc</h3>
+            <p class="post-body">Webapp that asks user how much their personal finance person is charging (say 1%) and compares how much their money will be worth if using VSTAX (0.22%), "We don't know ahead of time if this person will perform better than the market so we'll just take the average", "Financial adviser will need to beat the market by XX% EVERY SINGLE YEAR for you to break even", Other transactions - transaction/dealing fee, platform fee, exit fee, fund fee, etc</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">March 3rd 2021</div>
+            <h3 class="post-title">CC Optimizer</h3>
+            <p class="post-body">A tool that analyses all your transactions and picks the best credit card for you based on the benefits, For example if you spend a lot of money on Amazon, bills, groceries, travel, etc then tool calcs how much you would have got back from each card and picks the best one, ML mechanism to identify transactions that Amazon / AMEX / Visa would approve, Upload any transaction data in any format, automatically try to identify which columns are important details.</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">Jan 9th 2021</div>
+            <h3 class="post-title">Memori.es</h3>
+            <p class="post-body">A tool built using GPT-3 or similar that you upload your data too (export from WhatsApp, other writing samples) and the bot replies as if it was that person.</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">Jan 7th 2021</div>
+            <h3 class="post-title">Productivity Box</h3>
+            <p class="post-body">Physical box that when you rotate it, it detects which side is up and starts tracking time that way ... useful for tracking billable hours, etc (Jan 7th 2021)</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">May 7th 2020</div>
+            <h3 class="post-title">Sunlounger</h3>
+            <p class="post-body">AR app that allows you to follow the path of the sun to check if your garden will get sun in the morning or night (winter vs summer) and other home buying activities.</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
+              </span>
+            </div>
+          </article>
+
+          <article class="post">
+            <div class="post-type">May 1st 2020</div>
+            <h3 class="post-title">Zero Waste Calc</h3>
+            <p class="post-body">iPhone app that calculates return on investment from a 'zero waste' investment.</p>
+            <div class="post-meta">
+              <span class="tags">
+                <span class="tag tag-product-idea">Product Idea</span>
               </span>
             </div>
           </article>
@@ -441,21 +554,21 @@
         </header>
         <div class="feed-body">
           <div class="project-card">
-            <h3>Atlas Sketchpad</h3>
+            <h3>Project 1</h3>
             <p>
-              A digital studio for spatial note-taking. Think of it as a whiteboard that keeps the rationale alongside every sticky.
+              Loreum ipsum.
             </p>
           </div>
           <div class="project-card">
-            <h3>Signal Garden</h3>
+            <h3>Project 2</h3>
             <p>
-              Lightweight monitoring of product health using narrative incident reports and human-centered alerting.
+              Loreum ipsum.
             </p>
           </div>
           <div class="project-card">
-            <h3>Field Notes API</h3>
+            <h3>Project 3</h3>
             <p>
-              A toolbox of microservices for slow-web applications — queuing experiments, notification trails, and consent-first analytics.
+              Loreum ipsum.
             </p>
           </div>
         </div>
