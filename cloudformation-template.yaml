@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Provision an Amazon S3 bucket configured for static website hosting of the morrison.im landing page.
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Globally unique name for the S3 bucket (e.g. morrison-im-site).
+  IndexDocument:
+    Type: String
+    Default: index.html
+    Description: Default root document for the website.
+  ErrorDocument:
+    Type: String
+    Default: error.html
+    Description: Fallback document for 4XX responses (optional to upload).
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      WebsiteConfiguration:
+        IndexDocument: !Ref IndexDocument
+        ErrorDocument: !Ref ErrorDocument
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowPublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:GetObject
+            Resource:
+              - !Sub '${WebsiteBucket.Arn}/*'
+
+Outputs:
+  BucketNameOutput:
+    Description: Name of the S3 bucket hosting the website.
+    Value: !Ref WebsiteBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketName'
+  WebsiteURL:
+    Description: Public website endpoint for the S3 bucket.
+    Value: !GetAtt WebsiteBucket.WebsiteURL
+  BucketWebsiteDomain:
+    Description: Region-specific bucket website domain; useful for Route 53 aliases.
+    Value: !GetAtt WebsiteBucket.RegionalDomainName
