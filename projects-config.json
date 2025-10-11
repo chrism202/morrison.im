@@ -1,19 +1,9 @@
 {
   "projects": [
     {
-      "repo": "your-github-username/atlas-sketchpad",
-      "displayName": "Atlas Sketchpad",
-      "summary": "A digital studio for spatial note-taking. Think of it as a whiteboard that keeps the rationale alongside every sticky."
-    },
-    {
-      "repo": "your-github-username/signal-garden",
-      "displayName": "Signal Garden",
-      "summary": "Lightweight monitoring of product health using narrative incident reports and human-centered alerting."
-    },
-    {
-      "repo": "your-github-username/field-notes-api",
-      "displayName": "Field Notes API",
-      "summary": "A toolbox of microservices for slow-web applications — queuing experiments, notification trails, and consent-first analytics."
+      "repo": "chrism202/context-builder-ios",
+      "displayName": "Context Builder for iOS",
+      "summary": "Context Builder is a lightweight SwiftUI application and share extension that makes it effortless to capture any snippet of personal context from your iPhone. Highlight text, save images, or share links from any app into a single unified inbox that you can browse later.",
     }
   ]
 }
