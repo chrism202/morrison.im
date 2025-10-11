@@ -277,6 +277,7 @@
       .project-card h3 {
         margin: 0;
         font-size: 1.02rem;
+        font-weight: 600;
       }
 
       .project-card p {
@@ -284,6 +285,37 @@
         color: var(--muted);
         font-size: 0.93rem;
         line-height: 1.55;
+      }
+
+      .project-card a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .project-card a:hover,
+      .project-card a:focus-visible {
+        text-decoration: underline;
+      }
+
+      .project-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .project-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .project-sync-warning {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: #fca5a5;
       }
 
       .placeholder-note {
@@ -550,29 +582,17 @@
       <section class="feed" id="projects">
         <header class="feed-heading">
           <h2>Projects in Motion</h2>
-          <p>Live experiments that will eventually sync from GitHub once the API is wired in.</p>
+          <p>Live experiments, hydrated from GitHub on a schedule.</p>
         </header>
         <div class="feed-body">
-          <div class="project-card">
-            <h3>Project 1</h3>
-            <p>
-              Loreum ipsum.
-            </p>
-          </div>
-          <div class="project-card">
-            <h3>Project 2</h3>
-            <p>
-              Loreum ipsum.
-            </p>
-          </div>
-          <div class="project-card">
-            <h3>Project 3</h3>
-            <p>
-              Loreum ipsum.
-            </p>
+          <div class="projects-list" id="projects-list">
+            <div class="project-card project-card--placeholder">
+              <h3>Projects will appear here after sync.</h3>
+              <p>Update <code>projects-config.json</code> with real repositories and run the GitHub Action to hydrate this feed.</p>
+            </div>
           </div>
         </div>
-        <div class="placeholder-note">
+        <div class="placeholder-note" id="projects-note">
           Placeholder: GitHub integration will hydrate this list with repositories, open issues, and current milestones.
         </div>
       </section>
@@ -588,6 +608,132 @@
       if (yearEl) {
         yearEl.textContent = now.getFullYear();
       }
+
+      const formatDate = (input) => {
+        if (!input) return null;
+        const date = new Date(input);
+        if (Number.isNaN(date.getTime())) {
+          return null;
+        }
+        return date.toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      };
+
+      async function loadProjects() {
+        const listEl = document.getElementById('projects-list');
+        if (!listEl) return;
+        const noteEl = document.getElementById('projects-note');
+
+        try {
+          const response = await fetch('projects.json', { cache: 'no-store' });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          }
+          const data = await response.json();
+          const projects = Array.isArray(data.projects) ? data.projects : [];
+
+          if (!projects.length) {
+            if (noteEl) {
+              noteEl.textContent = 'No synced projects yet. Add repositories to projects-config.json and rerun the sync workflow.';
+            }
+            return;
+          }
+
+          listEl.innerHTML = '';
+
+          projects.forEach((project) => {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+
+            const title = document.createElement('h3');
+            const displayName = project.displayName || project.repo;
+
+            if (project.htmlUrl) {
+              const link = document.createElement('a');
+              link.href = project.htmlUrl;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              link.textContent = displayName;
+              title.appendChild(link);
+            } else {
+              title.textContent = displayName;
+            }
+
+            card.appendChild(title);
+
+            const bodyCopy = project.summary || project.description;
+            if (bodyCopy) {
+              const summary = document.createElement('p');
+              summary.textContent = bodyCopy;
+              card.appendChild(summary);
+            }
+
+            const metaItems = [];
+            if (project.language) {
+              metaItems.push(project.language);
+            }
+            if (typeof project.stars === 'number' && project.stars >= 0) {
+              metaItems.push(`${project.stars.toLocaleString()} ★`);
+            }
+            const lastPush = formatDate(project.lastPush);
+            if (lastPush) {
+              metaItems.push(`Updated ${lastPush}`);
+            }
+
+            if (project.homepage) {
+              metaItems.push(`Live: ${project.homepage}`);
+            }
+
+            if (metaItems.length > 0) {
+              const meta = document.createElement('div');
+              meta.className = 'project-meta';
+              metaItems.forEach((item) => {
+                const span = document.createElement('span');
+                if (item.startsWith('Live:')) {
+                  const url = project.homepage;
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.target = '_blank';
+                  link.rel = 'noopener';
+                  link.textContent = url.replace(/^https?:\/\//, '');
+                  span.textContent = 'Live: ';
+                  span.appendChild(link);
+                } else {
+                  span.textContent = item;
+                }
+                meta.appendChild(span);
+              });
+              card.appendChild(meta);
+            }
+
+            if (project.sync?.status && project.sync.status !== 'ok') {
+              const warning = document.createElement('p');
+              warning.className = 'project-sync-warning';
+              warning.textContent = `Sync status: ${project.sync.status}. ${project.sync.statusMessage || 'Check workflow logs for details.'}`;
+              card.appendChild(warning);
+            }
+
+            listEl.appendChild(card);
+          });
+
+          if (noteEl) {
+            const generatedAt = formatDate(data.generatedAt);
+            noteEl.textContent = generatedAt
+              ? `Synced from GitHub on ${generatedAt}. Workflow commits updates automatically.`
+              : 'Synced from GitHub. Workflow commits updates automatically.';
+          }
+        } catch (error) {
+          console.warn('Failed to load projects.json', error);
+          if (noteEl) {
+            noteEl.textContent = 'Unable to load projects.json. Ensure the sync workflow has run successfully.';
+          }
+        }
+      }
+
+      loadProjects();
     </script>
   </body>
 </html>
