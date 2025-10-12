@@ -1,56 +1,22 @@
 {
-  "generatedAt": "2025-10-11T15:31:47.446Z",
-  "source": "github-api",
+  "generatedAt": "2024-05-07T00:00:00.000Z",
+  "source": "aws-lambda-placeholder",
   "projects": [
     {
-      "repo": "your-github-username/atlas-sketchpad",
-      "displayName": "Atlas Sketchpad",
-      "summary": "A digital studio for spatial note-taking. Think of it as a whiteboard that keeps the rationale alongside every sticky.",
-      "description": null,
-      "htmlUrl": null,
+      "repo": "example/placeholder",
+      "displayName": "Placeholder Project",
+      "summary": "Deploy the GitHub Sync Lambda to replace this entry with live repository data.",
+      "description": "Placeholder data for local development. This file is overwritten in S3 by the Lambda job.",
+      "htmlUrl": "https://github.com/example/placeholder",
       "homepage": null,
-      "stars": null,
+      "stars": 0,
       "language": null,
       "topics": [],
       "lastPush": null,
       "sync": {
-        "status": "error",
-        "statusMessage": "Failed to fetch your-github-username/atlas-sketchpad: 404 Not Found - {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#get-a-repository\",\"status\":\"404\"}",
-        "fetchedAt": "2025-10-11T15:31:47.442Z"
-      }
-    },
-    {
-      "repo": "your-github-username/signal-garden",
-      "displayName": "Signal Garden",
-      "summary": "Lightweight monitoring of product health using narrative incident reports and human-centered alerting.",
-      "description": null,
-      "htmlUrl": null,
-      "homepage": null,
-      "stars": null,
-      "language": null,
-      "topics": [],
-      "lastPush": null,
-      "sync": {
-        "status": "error",
-        "statusMessage": "Failed to fetch your-github-username/signal-garden: 404 Not Found - {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#get-a-repository\",\"status\":\"404\"}",
-        "fetchedAt": "2025-10-11T15:31:47.446Z"
-      }
-    },
-    {
-      "repo": "your-github-username/field-notes-api",
-      "displayName": "Field Notes API",
-      "summary": "A toolbox of microservices for slow-web applications — queuing experiments, notification trails, and consent-first analytics.",
-      "description": null,
-      "htmlUrl": null,
-      "homepage": null,
-      "stars": null,
-      "language": null,
-      "topics": [],
-      "lastPush": null,
-      "sync": {
-        "status": "error",
-        "statusMessage": "Failed to fetch your-github-username/field-notes-api: 404 Not Found - {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/repos/repos#get-a-repository\",\"status\":\"404\"}",
-        "fetchedAt": "2025-10-11T15:31:47.440Z"
+        "status": "placeholder",
+        "statusMessage": "Lambda function has not run yet.",
+        "fetchedAt": "2024-05-07T00:00:00.000Z"
       }
     }
   ]

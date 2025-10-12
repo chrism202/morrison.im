@@ -1,9 +1,0 @@
-{
-  "projects": [
-    {
-      "repo": "chrism202/context-builder-ios",
-      "displayName": "Context Builder for iOS",
-      "summary": "Context Builder is a lightweight SwiftUI application and share extension that makes it effortless to capture any snippet of personal context from your iPhone. Highlight text, save images, or share links from any app into a single unified inbox that you can browse later."
-    }
-  ]
-}

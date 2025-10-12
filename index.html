@@ -582,18 +582,18 @@
       <section class="feed" id="projects">
         <header class="feed-heading">
           <h2>Projects in Motion</h2>
-          <p>Live experiments, hydrated from GitHub on a schedule.</p>
+          <p>Live experiments, hydrated from GitHub via AWS Lambda.</p>
         </header>
         <div class="feed-body">
           <div class="projects-list" id="projects-list">
             <div class="project-card project-card--placeholder">
               <h3>Projects will appear here after sync.</h3>
-              <p>Update <code>projects-config.json</code> with real repositories and run the GitHub Action to hydrate this feed.</p>
+              <p>Deploy the GitHub Sync Lambda and ensure it writes <code>projects.json</code> to your S3 bucket.</p>
             </div>
           </div>
         </div>
         <div class="placeholder-note" id="projects-note">
-          Placeholder: GitHub integration will hydrate this list with repositories, open issues, and current milestones.
+          Placeholder: AWS Lambda will hydrate this list with repositories, open issues, and current milestones.
         </div>
       </section>
     </main>
@@ -637,7 +637,7 @@
 
           if (!projects.length) {
             if (noteEl) {
-              noteEl.textContent = 'No synced projects yet. Add repositories to projects-config.json and rerun the sync workflow.';
+              noteEl.textContent = 'No synced projects yet. Verify the GitHub Sync Lambda is deployed and scheduled.';
             }
             return;
           }
@@ -722,13 +722,13 @@
           if (noteEl) {
             const generatedAt = formatDate(data.generatedAt);
             noteEl.textContent = generatedAt
-              ? `Synced from GitHub on ${generatedAt}. Workflow commits updates automatically.`
-              : 'Synced from GitHub. Workflow commits updates automatically.';
+              ? `Synced from GitHub on ${generatedAt}. AWS Lambda updates this feed automatically.`
+              : 'Synced from GitHub. AWS Lambda updates this feed automatically.';
           }
         } catch (error) {
           console.warn('Failed to load projects.json', error);
           if (noteEl) {
-            noteEl.textContent = 'Unable to load projects.json. Ensure the sync workflow has run successfully.';
+            noteEl.textContent = 'Unable to load projects.json. Ensure the Lambda sync has run successfully.';
           }
         }
       }
