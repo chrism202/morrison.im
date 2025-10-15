@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: >
-  GitHub Sync - provisions a Lambda function that fetches the latest GitHub repositories
-  and writes projects.json into an S3 static site bucket on a schedule.
+Description: |
+  GitHub Sync - provisions a Lambda function that fetches the latest GitHub repositories and writes projects.json into an S3 static site bucket on a schedule.
 
 Transform: AWS::Serverless-2016-10-31
 
@@ -21,7 +20,7 @@ Parameters:
 
   GitHubTokenSecretArn:
     Type: String
-    Description: >
+    Description: |
       ARN or name of the Secrets Manager secret that stores the GitHub Personal Access Token (string value).
 
   RepoLimit:
@@ -40,13 +39,14 @@ Resources:
   GitHubSyncFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub '${AWS::StackName}-GithubSync'
+      FunctionName: !Sub ${AWS::StackName}-GithubSync
       Runtime: python3.12
       Handler: github_sync.lambda_handler
       CodeUri: lambda/
       Timeout: 30
       MemorySize: 256
-      Description: Fetches the most recently updated repositories and stores projects.json in S3.
+      Description: Fetches the most recently updated repositories and stores
+        projects.json in S3.
       Environment:
         Variables:
           GITHUB_USERNAME: !Ref GitHubUsername
@@ -59,7 +59,7 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: !Ref ScheduleExpression
-            Name: !Sub '${AWS::StackName}-Schedule'
+            Name: !Sub ${AWS::StackName}-Schedule
             Description: GitHub to S3 sync cadence
       Policies:
         - Version: '2012-10-17'
@@ -71,7 +71,7 @@ Resources:
             - Effect: Allow
               Action:
                 - s3:PutObject
-              Resource: !Sub 'arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}'
+              Resource: !Sub arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}
       LogRetentionInDays: 30
 
 Outputs:
@@ -81,7 +81,7 @@ Outputs:
 
   ProjectsJsonLocation:
     Description: S3 URI where the JSON feed is written.
-    Value: !Sub 's3://${SiteBucketName}/${ProjectsObjectKey}'
+    Value: !Sub s3://${SiteBucketName}/${ProjectsObjectKey}
 
   Schedule:
     Description: EventBridge schedule expression for the sync.

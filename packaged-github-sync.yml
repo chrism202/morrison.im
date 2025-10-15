@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "GitHub Sync - provisions a Lambda function that fetches the latest GitHub\
+  \ repositories and writes projects.json into an S3 static site bucket on a schedule.\n"
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  SiteBucketName:
+    Type: String
+    Description: Name of the S3 bucket that hosts the static site.
+  ProjectsObjectKey:
+    Type: String
+    Default: projects.json
+    Description: Object key within the bucket to store the generated JSON payload.
+  GitHubUsername:
+    Type: String
+    Description: GitHub username or organization to query for repositories.
+  GitHubTokenSecretArn:
+    Type: String
+    Description: "ARN or name of the Secrets Manager secret that stores the GitHub\
+      \ Personal Access Token (string value).\n"
+  RepoLimit:
+    Type: Number
+    Default: 5
+    MinValue: 1
+    MaxValue: 50
+    Description: Number of repositories to keep in the generated feed.
+  ScheduleExpression:
+    Type: String
+    Default: cron(0 3 * * ? *)
+    Description: EventBridge schedule expression that triggers the sync (UTC).
+Resources:
+  GitHubSyncFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-GithubSync
+      Runtime: python3.12
+      Handler: github_sync.lambda_handler
+      CodeUri: s3://morrison.im/1453011900eaa190783955f9cd8b147d
+      Timeout: 30
+      MemorySize: 256
+      Description: Fetches the most recently updated repositories and stores projects.json
+        in S3.
+      Environment:
+        Variables:
+          GITHUB_USERNAME:
+            Ref: GitHubUsername
+          SITE_BUCKET_NAME:
+            Ref: SiteBucketName
+          PROJECTS_OBJECT_KEY:
+            Ref: ProjectsObjectKey
+          GITHUB_TOKEN_SECRET_ARN:
+            Ref: GitHubTokenSecretArn
+          REPO_LIMIT:
+            Ref: RepoLimit
+      Events:
+        ScheduledSync:
+          Type: Schedule
+          Properties:
+            Schedule:
+              Ref: ScheduleExpression
+            Name:
+              Fn::Sub: ${AWS::StackName}-Schedule
+            Description: GitHub to S3 sync cadence
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - secretsmanager:GetSecretValue
+          Resource:
+            Ref: GitHubTokenSecretArn
+        - Effect: Allow
+          Action:
+          - s3:PutObject
+          Resource:
+            Fn::Sub: arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}
+Outputs:
+  LambdaFunctionName:
+    Description: Name of the Lambda function that performs the sync.
+    Value:
+      Ref: GitHubSyncFunction
+  ProjectsJsonLocation:
+    Description: S3 URI where the JSON feed is written.
+    Value:
+      Fn::Sub: s3://${SiteBucketName}/${ProjectsObjectKey}
+  Schedule:
+    Description: EventBridge schedule expression for the sync.
+    Value:
+      Ref: ScheduleExpression
