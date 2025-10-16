@@ -22,11 +22,28 @@ def _load_token(secret_arn: str) -> str:
     if not secret_string:
         raise RuntimeError("Secret does not contain a SecretString payload.")
 
-    _cached_secret = secret_string.strip()
-    if not _cached_secret:
+    secret_value = secret_string.strip()
+    if not secret_value:
         raise RuntimeError("GitHub token secret is empty.")
 
-    return _cached_secret
+    if secret_value.startswith("{"):
+        try:
+            payload = json.loads(secret_value)
+            for key in ("token", "Token", "PAT", "pat", "github_token", "githubToken", "value"):
+                candidate = payload.get(key)
+                if isinstance(candidate, str) and candidate.strip():
+                    secret_value = candidate.strip()
+                    break
+            else:
+                raise RuntimeError(
+                    "Secret JSON found but no token field detected. "
+                    "Expected keys: token, github_token, pat."
+                )
+        except json.JSONDecodeError:
+            pass
+
+    _cached_secret = secret_value
+    return secret_value
 
 
 def _github_request(url: str, token: str) -> Any:
@@ -34,7 +51,7 @@ def _github_request(url: str, token: str) -> Any:
         "Accept": "application/vnd.github+json",
         "User-Agent": "morrison-im-lambda-sync",
         "X-GitHub-Api-Version": "2022-11-28",
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"token {token}",
     }
     req = request.Request(url, headers=headers)
 
