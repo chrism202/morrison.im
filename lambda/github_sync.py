@@ -29,16 +29,33 @@ def _load_token(secret_arn: str) -> str:
     if secret_value.startswith("{"):
         try:
             payload = json.loads(secret_value)
-            for key in ("token", "Token", "PAT", "pat", "github_token", "githubToken", "value"):
-                candidate = payload.get(key)
-                if isinstance(candidate, str) and candidate.strip():
-                    secret_value = candidate.strip()
-                    break
-            else:
+            candidate_value: str | None = None
+
+            if isinstance(payload, dict):
+                for key in ("token", "Token", "PAT", "pat", "github_token", "githubToken", "value"):
+                    candidate = payload.get(key)
+                    if isinstance(candidate, str) and candidate.strip():
+                        candidate_value = candidate.strip()
+                        break
+
+                if candidate_value is None:
+                    for value in payload.values():
+                        if isinstance(value, str) and value.strip():
+                            candidate_value = value.strip()
+                            break
+            elif isinstance(payload, list):
+                for item in payload:
+                    if isinstance(item, str) and item.strip():
+                        candidate_value = item.strip()
+                        break
+
+            if candidate_value is None:
                 raise RuntimeError(
                     "Secret JSON found but no token field detected. "
                     "Expected keys: token, github_token, pat."
                 )
+
+            secret_value = candidate_value
         except json.JSONDecodeError:
             pass
 

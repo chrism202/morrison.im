@@ -84,6 +84,7 @@ Resources:
               Action:
                 - s3:PutObject
               Resource: !Sub arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}
+      LogRetentionInDays: 30
 
 Outputs:
   LambdaFunctionName:

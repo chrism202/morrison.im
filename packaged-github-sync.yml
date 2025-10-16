@@ -35,7 +35,7 @@ Resources:
         Fn::Sub: ${AWS::StackName}-GithubSync
       Runtime: python3.12
       Handler: github_sync.lambda_handler
-      CodeUri: s3://morrison.im/e4051ef3ef7b6a918dccb1749ee89fc5
+      CodeUri: s3://morrison.im/5760ad115052fdbd6252076a3c51ac8e
       Timeout: 30
       MemorySize: 256
       Description: Fetches the most recently updated repositories and stores projects.json
