@@ -1,0 +1,212 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Provision S3 bucket + CloudFront distribution with HTTPS support for morrison.im.
+  This template enables HTTPS access via CloudFront with SSL/TLS certificate.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: morrison.im
+    Description: The domain name for the website (e.g., morrison.im)
+
+  IncludeWWW:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: Whether to include www subdomain (e.g., www.morrison.im)
+
+  BucketName:
+    Type: String
+    Description: Globally unique name for the S3 bucket (e.g., morrison-im-site)
+
+  IndexDocument:
+    Type: String
+    Default: index.html
+    Description: Default root document for the website
+
+  ErrorDocument:
+    Type: String
+    Default: index.html
+    Description: Fallback document for errors (using index.html for SPA-like behavior)
+
+  PriceClass:
+    Type: String
+    Default: PriceClass_100
+    AllowedValues:
+      - PriceClass_100
+      - PriceClass_200
+      - PriceClass_All
+    Description: CloudFront price class (PriceClass_100 = US/Canada/Europe, cheaper)
+
+Conditions:
+  ShouldIncludeWWW: !Equals [!Ref IncludeWWW, 'true']
+
+Resources:
+  # S3 Bucket for website content (NOT configured as website hosting)
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      Tags:
+        - Key: Purpose
+          Value: StaticWebsiteHosting
+
+  # CloudFront Origin Access Control (OAC) - modern replacement for OAI
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${BucketName}-OAC'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # S3 Bucket Policy to allow CloudFront access
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${WebsiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+  # ACM Certificate for HTTPS
+  # IMPORTANT: This must be created in us-east-1 for CloudFront
+  # If your stack is in another region, you'll need to create the cert manually in us-east-1
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames: !If
+        - ShouldIncludeWWW
+        - - !Sub 'www.${DomainName}'
+        - !Ref AWS::NoValue
+      ValidationMethod: DNS
+      Tags:
+        - Key: Name
+          Value: !Sub '${DomainName}-cert'
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Comment: !Sub 'CDN for ${DomainName}'
+
+        # Domain aliases
+        Aliases:
+          - !Ref DomainName
+          - !If [ShouldIncludeWWW, !Sub 'www.${DomainName}', !Ref AWS::NoValue]
+
+        # SSL Certificate
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+        # Default root object
+        DefaultRootObject: !Ref IndexDocument
+
+        # Origins
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+            OriginAccessControlId: !Ref CloudFrontOriginAccessControl
+
+        # Default cache behavior
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # CachingOptimized
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # CORS-S3Origin
+
+        # Custom error responses (for SPA-like behavior)
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: !Sub '/${IndexDocument}'
+            ErrorCachingMinTTL: 300
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: !Sub '/${IndexDocument}'
+            ErrorCachingMinTTL: 300
+
+        # Price class
+        PriceClass: !Ref PriceClass
+
+      Tags:
+        - Key: Purpose
+          Value: StaticWebsiteHosting
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket hosting the website content
+    Value: !Ref WebsiteBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketName'
+
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt WebsiteBucket.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketArn'
+
+  DistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref CloudFrontDistribution
+    Export:
+      Name: !Sub '${AWS::StackName}-DistributionId'
+
+  DistributionDomainName:
+    Description: CloudFront distribution domain name
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-DistributionDomain'
+
+  WebsiteURL:
+    Description: HTTPS URL for the website via CloudFront
+    Value: !Sub 'https://${DomainName}'
+
+  CertificateArn:
+    Description: ARN of the ACM certificate
+    Value: !Ref SSLCertificate
+    Export:
+      Name: !Sub '${AWS::StackName}-CertificateArn'
+
+  DNSInstructions:
+    Description: DNS configuration needed
+    Value: !Sub |
+      Create the following DNS records in your DNS provider:
+      1. A record: ${DomainName} -> ALIAS to ${CloudFrontDistribution.DomainName}
+      2. AAAA record: ${DomainName} -> ALIAS to ${CloudFrontDistribution.DomainName}
+      (If using Route 53, use ALIAS records pointing to CloudFront distribution)
