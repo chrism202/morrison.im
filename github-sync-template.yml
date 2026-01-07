@@ -84,7 +84,12 @@ Resources:
               Action:
                 - s3:PutObject
               Resource: !Sub arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}
-      LogRetentionInDays: 30
+
+  GitHubSyncLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-GithubSync
+      RetentionInDays: 30
 
 Outputs:
   LambdaFunctionName:

@@ -35,7 +35,7 @@ Resources:
         Fn::Sub: ${AWS::StackName}-GithubSync
       Runtime: python3.12
       Handler: github_sync.lambda_handler
-      CodeUri: s3://morrison.im/5760ad115052fdbd6252076a3c51ac8e
+      CodeUri: s3://morrison-im-lambda-artifacts-458807392519-use1/32d4977799b25f189909a6df82d6c614
       Timeout: 30
       MemorySize: 256
       Description: Fetches the most recently updated repositories and stores projects.json
@@ -74,6 +74,12 @@ Resources:
           - s3:PutObject
           Resource:
             Fn::Sub: arn:${AWS::Partition}:s3:::${SiteBucketName}/${ProjectsObjectKey}
+  GitHubSyncLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Sub: /aws/lambda/${AWS::StackName}-GithubSync
+      RetentionInDays: 30
 Outputs:
   LambdaFunctionName:
     Description: Name of the Lambda function that performs the sync.
