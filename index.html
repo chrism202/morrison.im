@@ -3,737 +3,98 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>morrison.im — Chris Morrison</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        color-scheme: dark;
-        --page-bg: #070c12;
-        --panel: #111820;
-        --panel-alt: #151f2a;
-        --border: #1f2a37;
-        --border-strong: #2b394a;
-        --text: #ecf2f8;
-        --muted: #99a7bd;
-        --accent: #3ddbd9;
-        --accent-soft: rgba(61, 219, 217, 0.15);
-        --sans: 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
-      }
-
-      *, *::before, *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        background: var(--page-bg);
-        color: var(--text);
-        font-family: var(--sans);
-        font-size: 16px;
-        line-height: 1.5;
-      }
-
-      a {
-        color: var(--accent);
-        text-decoration: none;
-      }
-
-      a:hover,
-      a:focus-visible {
-        text-decoration: underline;
-      }
-
-      main {
-        --pad-top: 2.5rem;
-        --pad-bottom: 2rem;
-        display: grid;
-        grid-template-columns: minmax(220px, 260px) repeat(2, minmax(260px, 1fr));
-        grid-template-areas:
-          "profile stream projects";
-        gap: 1.5rem;
-        align-items: stretch;
-        width: min(1120px, 100%);
-        margin: 0 auto;
-        padding: var(--pad-top) clamp(1rem, 3vw, 2.5rem) var(--pad-bottom);
-        min-height: 100vh;
-      }
-
-      .profile {
-        grid-area: profile;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        position: sticky;
-        top: 2rem;
-        align-self: flex-start;
-      }
-
-      .eyebrow {
-        font-family: var(--mono);
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        font-size: 0.7rem;
-        color: var(--muted);
-        margin: 0 0 0.35rem;
-      }
-
-      h1 {
-        font-size: clamp(2rem, 3vw, 2.4rem);
-        line-height: 1.15;
-        margin: 0;
-      }
-
-      .summary {
-        margin: 0;
-        color: var(--muted);
-      }
-
-      .signals {
-        display: grid;
-        gap: 0.75rem;
-        margin: 0;
-      }
-
-      .signals dt {
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
-
-      .signals dd {
-        margin: 0.15rem 0 0;
-        font-weight: 500;
-      }
-
-      .contact {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-      }
-
-      .contact a {
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        padding: 0.55rem 0.75rem;
-        border: 1px solid var(--border-strong);
-        border-radius: 8px;
-        background: var(--panel-alt);
-        transition: border-color 120ms ease, background 120ms ease;
-      }
-
-      .contact a:hover,
-      .contact a:focus-visible {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-      }
-
-      .feed {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: var(--panel-alt);
-        overflow: hidden;
-      }
-
-      #stream {
-        grid-area: stream;
-      }
-
-      #projects {
-        grid-area: projects;
-      }
-
-      .feed-heading {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-      }
-
-      .feed-heading h2 {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: 600;
-      }
-
-      .feed-heading p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
-      .feed-body {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        overflow-y: auto;
-        max-height: calc(100vh - var(--pad-top) - var(--pad-bottom) - 2.75rem);
-        overscroll-behavior: contain;
-      }
-
-      .post {
-        padding: 1rem 1.25rem;
-        border-top: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-      }
-
-      .post:first-of-type {
-        border-top: none;
-      }
-
-      .post-type {
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .post-title {
-        margin: 0;
-        font-size: 1.08rem;
-      }
-
-      .post-body {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.95rem;
-        line-height: 1.6;
-      }
-
-      .post-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        color: var(--muted);
-      }
-
-      .tags {
-        display: inline-flex;
-        gap: 0.4rem;
-      }
-
-      .tag {
-        border-radius: 6px;
-        padding: 0.2rem 0.55rem;
-        font-size: 0.72rem;
-        font-family: var(--mono);
-        border: 1px solid transparent;
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .tag-product-idea {
-        color: #3ddbd9;
-        border-color: rgba(61, 219, 217, 0.45);
-        background: rgba(61, 219, 217, 0.12);
-      }
-
-      .tag-shower-thoughts {
-        color: #fbbf24;
-        border-color: rgba(251, 191, 36, 0.5);
-        background: rgba(251, 191, 36, 0.12);
-      }
-
-      .tag-commentary {
-        color: #a3bffa;
-        border-color: rgba(163, 191, 250, 0.45);
-        background: rgba(163, 191, 250, 0.12);
-      }
-
-      .tag-active-projects {
-        color: #f472b6;
-        border-color: rgba(244, 114, 182, 0.45);
-        background: rgba(244, 114, 182, 0.12);
-      }
-
-      .project-card {
-        padding: 1rem 1.25rem;
-        border-top: 1px dashed var(--border);
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-
-      .project-card:first-of-type {
-        border-top: none;
-      }
-
-      .project-card h3 {
-        margin: 0;
-        font-size: 1.02rem;
-        font-weight: 600;
-      }
-
-      .project-card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.93rem;
-        line-height: 1.55;
-      }
-
-      .project-card a {
-        color: var(--accent);
-        text-decoration: none;
-      }
-
-      .project-card a:hover,
-      .project-card a:focus-visible {
-        text-decoration: underline;
-      }
-
-      .project-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        color: var(--muted);
-      }
-
-      .project-meta span {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-      }
-
-      .project-sync-warning {
-        font-family: var(--mono);
-        font-size: 0.72rem;
-        color: #fca5a5;
-      }
-
-      .placeholder-note {
-        padding: 0.8rem 1.25rem;
-        border-top: 1px solid var(--border-strong);
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        color: var(--muted);
-        background: rgba(61, 219, 217, 0.08);
-      }
-
-      footer {
-        width: min(1120px, 100%);
-        margin: 0 auto;
-        padding: 0  clamp(1rem, 3vw, 2.5rem) 2.5rem;
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        color: var(--muted);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        border-top: 1px solid var(--border);
-      }
-
-      footer span {
-        white-space: nowrap;
-      }
-
-      @media (max-width: 1024px) {
-        main {
-          grid-template-columns: minmax(220px, 250px) minmax(0, 1fr);
-          grid-template-areas:
-            "profile stream"
-            "profile projects";
-        }
-      }
-
-      @media (max-width: 780px) {
-        main {
-          grid-template-columns: 1fr;
-          grid-template-areas:
-            "profile"
-            "stream"
-            "projects";
-        }
-
-        .profile {
-          position: static;
-        }
-
-        .feed-body {
-          max-height: none;
-          overflow: visible;
-        }
-      }
-
-      @media (max-width: 600px) {
-        main {
-          padding: 1.5rem 1rem;
-        }
-
-        footer {
-          padding: 1rem;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      }
-    </style>
+    <title>Chris Morrison</title>
+    <meta name="description" content="Chris Morrison is a research product manager working on model behavior for speech and language models.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/style.css">
   </head>
   <body>
-    <main>
-      <aside class="profile">
-        <div>
-          <p class="eyebrow">morrison.im</p>
-          <h1>Chris Morrison</h1>
-          <p class="summary">
-            Product Manager by day. Vibe coder by night.
-          </p>
-        </div>
-
-        <dl class="signals">
-          <div>
-            <dt>Currently</dt>
-            <dd>Building models that think, see and decide at scale for Alexa+.</dd>
-          </div>
-          <div>
-            <dt>Focus</dt>
-            <dd>Building prototypes and MVPs to validate ideas quickly.</dd>
-          </div>
-          <div>
-            <dt>Based in</dt>
-            <dd>San Francisco Bay Area</dd>
-          </div>
-        </dl>
-
-        <nav class="contact" aria-label="Contact links">
-          <a href="mailto:hello@morrison.im">Email</a>
-          <a href="https://www.linkedin.com/in/chrism101/" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a>
-          <!-- <a href="#stream">Stream</a>
-          <a href="#projects">Projects</a> -->
+    <div class="page">
+      <header class="site-header">
+        <a class="site-title" href="/">Chris Morrison</a>
+        <nav aria-label="Primary navigation">
+          <a href="/archive.html">Archive</a>
+          <a href="/projects.html">Projects</a>
         </nav>
-      </aside>
+      </header>
 
-      <section class="feed" id="stream">
-        <header class="feed-heading">
-          <h2>Stream of Consciousness</h2>
-          <p>Working log: long-form notes, shower thoughts, and product ideas (feel free to steal).</p>
-        </header>
-        <div class="feed-body">
+      <main>
+        <section class="intro">
+          <p>
+            Chris Morrison is a research product manager working on model behavior for speech and language models. He is currently a Product Manager for model behavior at Cartesia, where he works on Sonic TTS models, evaluation systems, release controls, and multilingual quality.
+          </p>
+          <p>
+            Previously, Chris owned core LLM behavior for Alexa+, shaping conversational behavior across millions of customers and 70+ tools and APIs. His work sits between research, product, evaluation, data strategy, and launch readiness.
+          </p>
+          <p>
+            <a href="mailto:chris@morrison.im">Email</a>
+            <span class="separator">/</span>
+            <a href="https://www.linkedin.com/in/chrism101/" rel="me noopener">LinkedIn</a>
+          </p>
+        </section>
 
-          <article class="post">
-            <div class="post-type">August 30th 2025</div>
-            <h3 class="post-title">Context builder for iOS</h3>
-            <p class="post-body">A “context builder” app that works for iPhone. The premise of the application is that I can highlight any piece of text or select any image or other content and via the built-in share sheet, add it to a universal unstructured personal context. The focus of the application should be exclusively on removing the barrier to adding context and content - it should be as easy and simple as possible to add something from any app or website on my phone. Eventually we will use this context to do something useful, like  automatically creating “buckets” of related context, for example a selection of lifestyle guidelines and important advice, or a single place where all information related to an upcoming trip or house purchase are automatically collated.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-                <span class="tag tag-active-projects">Active Projects</span>
+        <section class="link-section" aria-labelledby="essays">
+          <h2 id="essays">Essays</h2>
+          <ol class="link-list">
+            <li>
+              <a href="/posts/richard-sutton-bitter-lesson.html">Richard Sutton, imitation, and experience</a>
+            </li>
+          </ol>
+        </section>
 
-              </span>
-            </div>
-          </article>
+        <section class="link-section" aria-labelledby="short-posts">
+          <h2 id="short-posts">Short posts</h2>
+          <ol class="link-list">
+            <li>
+              <a href="/posts/context-builder-for-ios.html">Context builder for iOS</a>
+            </li>
+            <li>
+              <a href="/posts/advertising-data-for-llms.html">Advertising data for LLMs</a>
+            </li>
+            <li>
+              <a href="/posts/text-a-service.html">Text-a-service</a>
+            </li>
+          </ol>
+        </section>
 
+        <section class="link-section" aria-labelledby="projects">
+          <h2 id="projects">Projects</h2>
+          <ol class="link-list">
+            <li>
+              <a href="/projects.html#context-builder">Context builder</a>
+            </li>
+            <li>
+              <a href="/projects.html#text-a-service">Text-a-service</a>
+            </li>
+            <li>
+              <a href="/projects.html#sunlounger">Sunlounger</a>
+            </li>
+          </ol>
+        </section>
 
-          <article class="post">
-            <div class="post-type">July 8th 2024</div>
-            <h3 class="post-title">Advertising data for LLMs</h3>
-            <p class="post-body">The business is selling ads, the customer buys ad topics, we generate the RLHF/SFT data required to bias the LLM and then we pay model builders to use our data.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-                <!-- <span class="tag tag-shower-thoughts">Shower Thoughts</span>
-                <span class="tag tag-commentary">Commentary</span> -->
-              </span>
-            </div>
-          </article>
+        <section class="link-section" aria-labelledby="links">
+          <h2 id="links">Links</h2>
+          <ol class="link-list">
+            <li>
+              <a href="mailto:chris@morrison.im">chris@morrison.im</a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/in/chrism101/" rel="noopener">LinkedIn</a>
+            </li>
+            <li>
+              <a href="/archive.html">Full archive</a>
+            </li>
+          </ol>
+        </section>
+      </main>
 
-          <article class="post">
-            <div class="post-type">July 8th 2024</div>
-            <h3 class="post-title">Text-a-service</h3>
-            <p class="post-body">API layer on top of service (OpenAI, CalFire), provision phone number from Twilio and connect to API layer.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-                <span class="tag tag-active-projects">Active Projects</span>
-              </span>
-            </div>
-          </article>
+      <footer>
+        <p>&copy; <span id="year">2026</span> Chris Morrison</p>
+      </footer>
+    </div>
 
-          <article class="post">
-            <div class="post-type">March 1st 2022</div>
-            <h3 class="post-title">Off switch.</h3>
-            <p class="post-body"> Web-based button that turns on and off an EC2 server, ideally the one that is hosting the site.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">Sept 2st 2021</div>
-            <h3 class="post-title">Meditation phones</h3>
-            <p class="post-body">Play white noise automatically when you put them in your ear.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">June 22nd 2021</div>
-            <h3 class="post-title">Layman</h3>
-            <p class="post-body">A service that summarizes key research papers and highlights how many times they have been referenced (lots = good), what the key conclusions were, and how many subjects were in the test group.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">April 30th 2021</div>
-            <h3 class="post-title">Ultimate bottle</h3>
-            <p class="post-body">A standardised bottle that is optimised for CO2 emissions,Take what the shipping container done for international trade, What are bottles responsible for in CO2 emissions?</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">April 29th 201</div>
-            <h3 class="post-title">Rip-off Calc</h3>
-            <p class="post-body">Webapp that asks user how much their personal finance person is charging (say 1%) and compares how much their money will be worth if using VSTAX (0.22%), "We don't know ahead of time if this person will perform better than the market so we'll just take the average", "Financial adviser will need to beat the market by XX% EVERY SINGLE YEAR for you to break even", Other transactions - transaction/dealing fee, platform fee, exit fee, fund fee, etc</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">March 3rd 2021</div>
-            <h3 class="post-title">CC Optimizer</h3>
-            <p class="post-body">A tool that analyses all your transactions and picks the best credit card for you based on the benefits, For example if you spend a lot of money on Amazon, bills, groceries, travel, etc then tool calcs how much you would have got back from each card and picks the best one, ML mechanism to identify transactions that Amazon / AMEX / Visa would approve, Upload any transaction data in any format, automatically try to identify which columns are important details.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">Jan 9th 2021</div>
-            <h3 class="post-title">Memori.es</h3>
-            <p class="post-body">A tool built using GPT-3 or similar that you upload your data too (export from WhatsApp, other writing samples) and the bot replies as if it was that person.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">Jan 7th 2021</div>
-            <h3 class="post-title">Productivity Box</h3>
-            <p class="post-body">Physical box that when you rotate it, it detects which side is up and starts tracking time that way ... useful for tracking billable hours, etc (Jan 7th 2021)</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">May 7th 2020</div>
-            <h3 class="post-title">Sunlounger</h3>
-            <p class="post-body">AR app that allows you to follow the path of the sun to check if your garden will get sun in the morning or night (winter vs summer) and other home buying activities.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-
-          <article class="post">
-            <div class="post-type">May 1st 2020</div>
-            <h3 class="post-title">Zero Waste Calc</h3>
-            <p class="post-body">iPhone app that calculates return on investment from a 'zero waste' investment.</p>
-            <div class="post-meta">
-              <span class="tags">
-                <span class="tag tag-product-idea">Product Idea</span>
-              </span>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="feed" id="projects">
-        <header class="feed-heading">
-          <h2>Projects in Motion</h2>
-          <p>Live experiments, hydrated from GitHub via AWS Lambda.</p>
-        </header>
-        <div class="feed-body">
-          <div class="projects-list" id="projects-list">
-            <div class="project-card project-card--placeholder">
-              <h3>Projects will appear here after sync.</h3>
-              <p>Deploy the GitHub Sync Lambda and ensure it writes <code>projects.json</code> to your S3 bucket.</p>
-            </div>
-          </div>
-        </div>
-        <div class="placeholder-note" id="projects-note">
-          Placeholder: AWS Lambda will hydrate this list with repositories, open issues, and current milestones.
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <span>© <span id="year">2024</span> Chris Morrison</span>
-      <span>Last rebuild: steady iteration, not a redesign.</span>
-    </footer>
     <script>
-      const yearEl = document.getElementById('year');
-      const now = new Date();
-      if (yearEl) {
-        yearEl.textContent = now.getFullYear();
-      }
-
-      const formatDate = (input) => {
-        if (!input) return null;
-        const date = new Date(input);
-        if (Number.isNaN(date.getTime())) {
-          return null;
-        }
-        return date.toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-      };
-
-      async function loadProjects() {
-        const listEl = document.getElementById('projects-list');
-        if (!listEl) return;
-        const noteEl = document.getElementById('projects-note');
-
-        try {
-          const response = await fetch('projects.json', { cache: 'no-store' });
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status} ${response.statusText}`);
-          }
-          const data = await response.json();
-          const projects = Array.isArray(data.projects) ? data.projects : [];
-
-          if (!projects.length) {
-            if (noteEl) {
-              noteEl.textContent = 'No synced projects yet. Verify the GitHub Sync Lambda is deployed and scheduled.';
-            }
-            return;
-          }
-
-          listEl.innerHTML = '';
-
-          projects.forEach((project) => {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-
-            const title = document.createElement('h3');
-            const displayName = project.displayName || project.repo;
-
-            if (project.htmlUrl) {
-              const link = document.createElement('a');
-              link.href = project.htmlUrl;
-              link.target = '_blank';
-              link.rel = 'noopener';
-              link.textContent = displayName;
-              title.appendChild(link);
-            } else {
-              title.textContent = displayName;
-            }
-
-            card.appendChild(title);
-
-            const bodyCopy = project.summary || project.description;
-            if (bodyCopy) {
-              const summary = document.createElement('p');
-              summary.textContent = bodyCopy;
-              card.appendChild(summary);
-            }
-
-            const metaItems = [];
-            if (project.language) {
-              metaItems.push(project.language);
-            }
-            if (typeof project.stars === 'number' && project.stars >= 0) {
-              metaItems.push(`${project.stars.toLocaleString()} ★`);
-            }
-            const lastPush = formatDate(project.lastPush);
-            if (lastPush) {
-              metaItems.push(`Updated ${lastPush}`);
-            }
-
-            if (project.homepage) {
-              metaItems.push(`Live: ${project.homepage}`);
-            }
-
-            if (metaItems.length > 0) {
-              const meta = document.createElement('div');
-              meta.className = 'project-meta';
-              metaItems.forEach((item) => {
-                const span = document.createElement('span');
-                if (item.startsWith('Live:')) {
-                  const url = project.homepage;
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.target = '_blank';
-                  link.rel = 'noopener';
-                  link.textContent = url.replace(/^https?:\/\//, '');
-                  span.textContent = 'Live: ';
-                  span.appendChild(link);
-                } else {
-                  span.textContent = item;
-                }
-                meta.appendChild(span);
-              });
-              card.appendChild(meta);
-            }
-
-            if (project.sync?.status && project.sync.status !== 'ok') {
-              const warning = document.createElement('p');
-              warning.className = 'project-sync-warning';
-              warning.textContent = `Sync status: ${project.sync.status}. ${project.sync.statusMessage || 'Check workflow logs for details.'}`;
-              card.appendChild(warning);
-            }
-
-            listEl.appendChild(card);
-          });
-
-          if (noteEl) {
-            const generatedAt = formatDate(data.generatedAt);
-            noteEl.textContent = generatedAt
-              ? `Synced from GitHub on ${generatedAt}. AWS Lambda updates this feed automatically.`
-              : 'Synced from GitHub. AWS Lambda updates this feed automatically.';
-          }
-        } catch (error) {
-          console.warn('Failed to load projects.json', error);
-          if (noteEl) {
-            noteEl.textContent = 'Unable to load projects.json. Ensure the Lambda sync has run successfully.';
-          }
-        }
-      }
-
-      loadProjects();
+      document.getElementById('year').textContent = new Date().getFullYear();
     </script>
   </body>
 </html>
